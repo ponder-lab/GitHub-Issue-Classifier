@@ -12,8 +12,8 @@ TODO:
 import json
 from urllib.request import urlopen
 from urllib.parse import urlencode
-from joblib import load
-from sklearn.feature_extraction.text import CountVectorizer
+
+from utils.commentProcessor import processComment
 
 def print_json(j):
 	print(json.dumps(j, indent=2, sort_keys=True))
@@ -77,11 +77,8 @@ for url in comments_urls:
 			comment_lines = comment["body"].splitlines()
 
 			for line in comment_lines:
-				#
-				# TODO: Do proper parsing and cleaning here.
-				#
 				if line != "":
-					CORPUS.append({ "issueID": url['issueID'], "commentLine": line})
+					CORPUS.append({ "issueID": url['issueID'], "commentLine": processComment(line)})
 
 
 print_json(CORPUS)
