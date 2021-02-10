@@ -20,8 +20,10 @@ def print_json(j):
 
 GITHUB_API_SEARCH_ISSUES_URL = "https://api.github.com/search/issues"
 
+SEARCH_QUERY = "tf.function"
+
 encodedQueryString = urlencode({
-	'q': 'tf.function',
+	'q': SEARCH_QUERY,
 	'per_page': '10',
 	'sort': 'comments',
 	'order': 'desc'
@@ -40,8 +42,9 @@ searchUrl = GITHUB_API_SEARCH_ISSUES_URL + "?" + encodedQueryString
 with open("search_sample.json") as f:
 	searchResults = json.load(f)
 
-# Sorts results by most comments to least
-searchResults['items'].sort(key = lambda x: x['comments'], reverse=True)
+# TODO: Consider refactoring the below functions to a separate utility function file
+# Filter out search results that does not contain our query in the body/title
+searchResults['items'] = list(filter(lambda r: SEARCH_QUERY in r['title'] or r['body'], searchResults['items']))
 
 # Slice top N issues
 searchResults['items'] = searchResults['items'][0:7]
