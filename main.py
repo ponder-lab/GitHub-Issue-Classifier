@@ -21,25 +21,6 @@ def print_json(j):
 	print(json.dumps(j, indent=2, sort_keys=True))
 
 
-## Load Model/Vector - Use the searilized model/count vector files included
-
-# model = load("GitHub_comments_logisticRegression.model")
-#
-# vectorizer = load("GitHub_comments_logisticRegression.countVector")
-#
-# # TODO: Use actual comments from GitHub search results
-# test_vector = vectorizer.transform(["As an example here is a piece of code that demonstrates what I'd like to do."])
-#
-# print(model.predict(test_vector))
-
-# X = [1,2,3]
-#
-# X = list(map(lambda a: a * 2, X))
-#
-# print(X)
-
-# exit(1)
-
 GITHUB_API_SEARCH_ISSUES_URL = "https://api.github.com/search/issues"
 
 SEARCH_QUERY = "tf.function"
