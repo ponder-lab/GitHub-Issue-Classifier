@@ -40,6 +40,10 @@ def get_lemma(item):
 # Main parser/processor function
 
 def processComment(c):
+    # Replace \n newline character and \t tabs
+    c = c.replace('\n', '')
+    c = c.replace('\t', '')
+
     # Tokenize CODE
     c = re.sub('```([^`]*)```|`([^`]*)`', 'CODE', c)
 

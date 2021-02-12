@@ -12,6 +12,6 @@ Python script to mine for GitHub issues + comments.
 
 ### TODO:
 - ~~Clean comment and properly parse out `<CODE>` blocks in comments~~
-- Fix up query to retrieve all result pages (currently only looking at 1 page/100 results)
-- Feed data into model to predict comment/lines.
+- ~~Fix up query to retrieve all result pages (currently only looking at 1 page/100 results)~~
+- ~~Feed data into model to predict comment/lines.~~
 - Set up interface (Web, GUI, CLI?)
