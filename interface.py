@@ -1,7 +1,7 @@
 from pyfiglet import Figlet
 from PyInquirer import prompt
-from os import system, name
 from prompt_toolkit.validation import Validator, ValidationError
+from utils.io import clear
 import regex
 
 # Params validator
@@ -68,22 +68,12 @@ CONFIRM_INTERFACE = [
     }
 ]
 
-# Screen Clear
-def clear():
-
-    # for windows
-    if name == 'nt':
-        _ = system('cls')
-
-        # for mac and linux(here, os.name is 'posix')
-    else:
-        _ = system('clear')
-
+# Print CLI header
 def printHeader():
     f = Figlet(font='big')
     print(f.renderText('GitHub Issue Classifier'))
-    print('GitHub Issue Classifier')
-    print('PONDER Labs - https://github.com/ponder-lab \n')
+    print('GitHub Issue Classifier CLI Tool')
+    print('PONDER Lab - https://github.com/ponder-lab \n')
 
 # Main Interface Function
 def InitializeSearchInterface():
