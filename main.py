@@ -10,6 +10,7 @@ TODO:
 - Feed processed comment lines into linear regression model to predict comment types.
 '''
 import json
+
 from math import ceil
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -18,7 +19,7 @@ from joblib import load
 
 from utils.commentProcessor import processComment
 from utils.filterResults import filterIssueWithQueryString
-from utils.io import printJSON
+from utils.io import printJSON, writeResultToCSV
 
 from interface import InitializeSearchInterface
 
@@ -56,6 +57,7 @@ MAX_PAGES_TO_QUERY = pages_per_100 if pages_per_100 > 1 else 1
 RESULTS_PER_PAGE = 100 if max_results_param > 100 else max_results_param
 SORT_BY = params['sort_by']
 PRINT_LOGS = params['print_logs']
+OUTPUT_FILE_PREFIX = params['out_file_prefix']
 
 print("\n")
 while PAGES_LEFT_TO_QUERY:
@@ -72,8 +74,7 @@ while PAGES_LEFT_TO_QUERY:
 	# Sample URL
 	# https://api.github.com/search/issues?q=%22%40tf.function%22&per_page=3&sort=comments&order=desc
 
-	if PRINT_LOGS:
-		print("[SEARCH QUERY GET]: " + searchUrl)
+	print("[SEARCH QUERY GET]: " + searchUrl)
 
 	try:
 		searchResults = json.loads(urlopen(searchUrl)
@@ -91,13 +92,34 @@ while PAGES_LEFT_TO_QUERY:
 
 
 '''
+### DEV BLOCK START
 This uses a search_sample.json file results for testing/dev purpose
 '''
+# Hard coded params for later use
+# SEARCH_QUERY = "tf.function"
+# PRINT_LOGS = True
+# OUTPUT_FILE_PREFIX = 'ponder'
 # with open("search_sample.json") as f:
 # 	searchResults = json.load(f)
+'''
+### DEV BLOCK END
+'''
 
 # Filter out search results that does not contain our query in the body/title
-searchResults['items'] = filterIssueWithQueryString(searchResults['items'], SEARCH_QUERY, PRINT_LOGS)
+searchResults['items'], OMITTED_RESULTS = filterIssueWithQueryString(searchResults['items'], SEARCH_QUERY)
+
+OMITTED_ISSUES = []
+for result in OMITTED_RESULTS:
+	OMITTED_ISSUES.append({
+		"issueID": result['id'],
+		"issueURL": result['html_url'],
+		"title": result['title'],
+		"body": result['body']
+	})
+
+if PRINT_LOGS:
+	print('\n OMITTED ISSUES \n')
+	printJSON(OMITTED_ISSUES)
 
 # Slice top N issues. This helps prevent us from hitting GitHub's API call limit.
 searchResults['items'] = searchResults['items'][0:TOP_N_RESULTS]
@@ -117,8 +139,7 @@ print("\n")
 
 for url in comments_urls:
 
-	if PRINT_LOGS:
-		print("[COMMENTS URL GET]: " + url['comments_url'])
+	print("[COMMENTS URL GET]: " + url['comments_url'])
 
 	try:
 		comment_data = json.loads(urlopen(url['comments_url'])
@@ -157,4 +178,9 @@ for c in CORPUS:
 
 # Print the resulting corpus with the category predicted for each comment.
 if PRINT_LOGS:
+	print('\n CLASSIFIED COMMENTS \n')
 	printJSON(CORPUS)
+
+print("\n")
+writeResultToCSV(OMITTED_ISSUES, OUTPUT_FILE_PREFIX + '_OMITTED_ISSUES')
+writeResultToCSV(OMITTED_ISSUES, OUTPUT_FILE_PREFIX + '_CLASSIFIED_COMMENTS')
