@@ -36,7 +36,7 @@ INTERFACE = [
     {
         'type': 'input',
         'name': 'max_results',
-        'message': "Max number of results (1000 max/default):",
+        'message': "Max number of results (1-1000):",
         'validate': MaxResultValidator
     },
     # TODO: Need to figure out how to deal with query limit.
