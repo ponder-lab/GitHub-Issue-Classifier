@@ -1,5 +1,7 @@
 # GitHub-Issue-Mining
-Python script to mine for GitHub issues + comments.
+Python script to mine for GitHub issues + comments and classify them.
+
+![CLI Tool Screenshot](./cli_screenshot.png)
 
 ### Setup and run instruction:
 1) Ensure Python `3.9.1` and corrosponding pip `3.9` are installed
