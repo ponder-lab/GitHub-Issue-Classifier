@@ -14,7 +14,7 @@ class QueryStringValidator(Validator):
 
 class MaxResultValidator(Validator):
     def validate(self, document):
-        ok = regex.match('^([1-9]|[1-9][0-9]|[1-9][0-9][0-9])$', document.text)
+        ok = regex.match('^([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|1000)$', document.text)
         if not ok:
             raise ValidationError(
                 message='Please enter max results range (1-1000)',
