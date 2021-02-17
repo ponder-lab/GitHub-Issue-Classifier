@@ -60,6 +60,8 @@ SORT_BY = params['sort_by']
 PRINT_LOGS = params['print_logs']
 OUTPUT_FILE_PREFIX = params['out_file_prefix']
 
+OMITTED_CLASSIFICATIONS = params['omitted_classes']
+
 searchResults = []
 while PAGES_LEFT_TO_QUERY:
 	encodedQueryString = urlencode({
@@ -190,7 +192,11 @@ vectorizer = load("GitHub_comments_logisticRegression.countVector")
 
 for c in CORPUS:
 	test_vector = vectorizer.transform([c['commentLine']])
-	c['category'] = model.predict(test_vector)[0]
+	classifiedCategory = model.predict(test_vector)[0]
+
+	# TODO: Look into why we sometimes get empty prediction on the category
+	if classifiedCategory not in OMITTED_CLASSIFICATIONS:
+		c['category'] = classifiedCategory
 
 # Print the resulting corpus with the category predicted for each comment.
 if PRINT_LOGS:

@@ -60,6 +60,29 @@ INTERFACE = [
         'filter': lambda val: SORT_OPTIONS_MAP[val]
     },
     {
+        'type': 'checkbox',
+        'name': 'omitted_classes',
+        'message': "Omit classification categories:",
+        'choices': [
+            { 'name': 'Expected Behaviour'},
+            { 'name': 'Motivation'},
+            { 'name': 'Observed Bug Behaviour'},
+            { 'name': 'Bug Reproduction'},
+            { 'name': 'Investigation and Exploration'},
+            { 'name': 'Solution Discussion'},
+            { 'name': 'Contribution and Commitment'},
+            { 'name': 'Task Progress'},
+            { 'name': 'Testing'},
+            { 'name': 'Future Plan'},
+            { 'name': 'New Issues and Requests'},
+            { 'name': 'Solution Usages'},
+            { 'name': 'WorkArounds'},
+            { 'name': 'Issue Content Management'},
+            { 'name': 'Action on Issue'},
+            { 'name': 'Social Conversation'}
+        ],
+    },
+    {
         'type': 'confirm',
         'name': 'print_logs',
         'message': "Print logs to console/terminal? (y/N):",
@@ -105,3 +128,6 @@ def InitializeSearchInterface():
     printHeader()
     return params
 
+# Dev mode, call function below to load the interface
+# returnedParams = InitializeSearchInterface()
+# print(returnedParams)
