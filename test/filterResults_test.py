@@ -10,7 +10,8 @@ TEST_CASES = [
         "expected_result": [{
             "title": "The title contains query string alpha123",
             "body": "The body does not contain it"
-        }]
+        }],
+        "omitted_result": []
     },
     {
         "items": [{
@@ -21,7 +22,8 @@ TEST_CASES = [
         "expected_result": [{
             "title": "The title does not contain it",
             "body": "But now the body does contain the some.function.123 query string"
-        }]
+        }],
+        "omitted_result": []
     },
     {
         "items": [{
@@ -29,10 +31,16 @@ TEST_CASES = [
             "body": "Or the body contains the query string"
         }],
         "query": "look@thistring",
-        "expected_result": []
+        "expected_result": [],
+        "omitted_result": [{
+            "title": "Neither the title",
+            "body": "Or the body contains the query string"
+        }]
     },
 ]
 
 def test_filter_results():
     for TEST in TEST_CASES:
-        assert(filterIssueWithQueryString(TEST['items'], TEST['query'], False) == TEST['expected_result'])
+        matched, omitted = filterIssueWithQueryString(TEST['items'], TEST['query'])
+        assert(matched == TEST['expected_result'])
+        assert(omitted == TEST['omitted_result'])

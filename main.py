@@ -10,6 +10,7 @@ TODO:
 - Feed processed comment lines into linear regression model to predict comment types.
 '''
 import json
+
 from math import ceil
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -18,7 +19,7 @@ from joblib import load
 
 from utils.commentProcessor import processComment
 from utils.filterResults import filterIssueWithQueryString
-from utils.io import printJSON
+from utils.io import printJSON, writeResultToCSV
 
 from interface import InitializeSearchInterface
 
@@ -53,11 +54,13 @@ SEARCH_QUERY = params['q']
 max_results_param = int(params['max_results'])
 pages_per_100 =  ceil(max_results_param/100)
 MAX_PAGES_TO_QUERY = pages_per_100 if pages_per_100 > 1 else 1
+
 RESULTS_PER_PAGE = 100 if max_results_param > 100 else max_results_param
 SORT_BY = params['sort_by']
 PRINT_LOGS = params['print_logs']
+OUTPUT_FILE_PREFIX = params['out_file_prefix']
 
-print("\n")
+searchResults = []
 while PAGES_LEFT_TO_QUERY:
 	encodedQueryString = urlencode({
 		'q': SEARCH_QUERY,
@@ -72,39 +75,74 @@ while PAGES_LEFT_TO_QUERY:
 	# Sample URL
 	# https://api.github.com/search/issues?q=%22%40tf.function%22&per_page=3&sort=comments&order=desc
 
-	if PRINT_LOGS:
-		print("[SEARCH QUERY GET]: " + searchUrl)
+	print("[SEARCH QUERY GET]: " + searchUrl)
 
 	try:
-		searchResults = json.loads(urlopen(searchUrl)
+		pageResults = json.loads(urlopen(searchUrl)
 								   .read()
 								   .decode("utf-8"))
 	except HTTPError:
 		print("Search Query HTTPError: " + searchUrl)
 		exit(0)
 
+	# If no more results, stop querying additional pages.
+	if len(pageResults['items']) == 0:
+		PAGES_LEFT_TO_QUERY = False
+	else:
+		# If new incoming page results will put us over user defined search limit
+		# Trim the results down to the user defined limit and stop query
+		searchResults += pageResults['items']
+
+		if len(searchResults) > max_results_param:
+			searchResults = searchResults[0:max_results_param]
+			PAGES_LEFT_TO_QUERY = False
 
 	PAGE += 1
 
-	if len(searchResults['items']) == 0 or PAGE > MAX_PAGES_TO_QUERY:
+	if PAGE > MAX_PAGES_TO_QUERY:
 		PAGES_LEFT_TO_QUERY = False
 
-
 '''
+### DEV BLOCK START
 This uses a search_sample.json file results for testing/dev purpose
 '''
+# Hard coded params for later use
+# SEARCH_QUERY = "tf.function"
+# PRINT_LOGS = True
+# OUTPUT_FILE_PREFIX = 'ponder'
 # with open("search_sample.json") as f:
 # 	searchResults = json.load(f)
+'''
+### DEV BLOCK END
+'''
+
+print(str(len(searchResults)) + " results retrieved.")
 
 # Filter out search results that does not contain our query in the body/title
-searchResults['items'] = filterIssueWithQueryString(searchResults['items'], SEARCH_QUERY, PRINT_LOGS)
+MATCHED_RESULTS, OMITTED_RESULTS = filterIssueWithQueryString(searchResults, SEARCH_QUERY)
+
+print(str(len(MATCHED_RESULTS)) + " results title/body closely matched with query.")
+print(str(len(OMITTED_RESULTS)) + " results omitted due to lack of match with query.")
+
+OMITTED_ISSUES = []
+for result in OMITTED_RESULTS:
+	OMITTED_ISSUES.append({
+		"issueID": result['id'],
+		"issueURL": result['html_url'],
+		"title": result['title'],
+		"body": result['body']
+	})
+
+if PRINT_LOGS:
+	print('\n OMITTED ISSUES \n')
+	printJSON(OMITTED_ISSUES)
 
 # Slice top N issues. This helps prevent us from hitting GitHub's API call limit.
-searchResults['items'] = searchResults['items'][0:TOP_N_RESULTS]
+MATCHED_RESULTS = MATCHED_RESULTS[0:TOP_N_RESULTS]
 
 comments_urls = []
 
-for r in searchResults['items']:
+for r in MATCHED_RESULTS:
 	comments_urls.append({"issueID": r['id'], "comments_url": r['comments_url']})
 
 # Test URL:
@@ -117,8 +155,7 @@ print("\n")
 
 for url in comments_urls:
 
-	if PRINT_LOGS:
-		print("[COMMENTS URL GET]: " + url['comments_url'])
+	print("[COMMENTS URL GET]: " + url['comments_url'])
 
 	try:
 		comment_data = json.loads(urlopen(url['comments_url'])
@@ -157,4 +194,10 @@ for c in CORPUS:
 
 # Print the resulting corpus with the category predicted for each comment.
 if PRINT_LOGS:
+	print('\n CLASSIFIED COMMENTS \n')
 	printJSON(CORPUS)
+
+print("\n")
+writeResultToCSV(OMITTED_ISSUES, OUTPUT_FILE_PREFIX + '_OMITTED_ISSUES')
+writeResultToCSV(CORPUS, OUTPUT_FILE_PREFIX + '_CLASSIFIED_COMMENTS')
+print("\n")

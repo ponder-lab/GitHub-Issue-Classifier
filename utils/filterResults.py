@@ -17,14 +17,14 @@ Post-condition:
 
 from utils.io import printGHIssue
 
-def filterIssueWithQueryString(results, query, print_logs):
-    filteredResults = []
+def filterIssueWithQueryString(results, query):
+    matchedResults = []
+    omittedResults = []
 
     for r in results:
         if query in r['title'] or query in r['body']:
-            filteredResults.append(r)
-        elif print_logs:
-            print("\nNo Match")
-            printGHIssue(r)
+            matchedResults.append(r)
+        else:
+            omittedResults.append(r)
 
-    return filteredResults
+    return [matchedResults, omittedResults]

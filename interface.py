@@ -5,11 +5,11 @@ from utils.io import clear
 import regex
 
 # Params validator
-class QueryStringValidator(Validator):
+class NonEmptyStringValidator(Validator):
     def validate(self, document):
         if not document.text.replace(' ', ''):
             raise ValidationError(
-                message='Please enter a search string to query',
+                message='Please enter a non-empty string',
                 cursor_position=0)
 
 class MaxResultValidator(Validator):
@@ -31,7 +31,13 @@ INTERFACE = [
         'type': 'input',
         'name': 'q',
         'message': "Enter search string:",
-        'validate': QueryStringValidator
+        'validate': NonEmptyStringValidator
+    },
+    {
+        'type': 'input',
+        'name': 'out_file_prefix',
+        'message': "Enter a prefix for results output file:",
+        'validate': NonEmptyStringValidator
     },
     {
         'type': 'input',
