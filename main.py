@@ -54,12 +54,13 @@ SEARCH_QUERY = params['q']
 max_results_param = int(params['max_results'])
 pages_per_100 =  ceil(max_results_param/100)
 MAX_PAGES_TO_QUERY = pages_per_100 if pages_per_100 > 1 else 1
+
 RESULTS_PER_PAGE = 100 if max_results_param > 100 else max_results_param
 SORT_BY = params['sort_by']
 PRINT_LOGS = params['print_logs']
 OUTPUT_FILE_PREFIX = params['out_file_prefix']
 
-print("\n")
+searchResults = []
 while PAGES_LEFT_TO_QUERY:
 	encodedQueryString = urlencode({
 		'q': SEARCH_QUERY,
@@ -77,19 +78,29 @@ while PAGES_LEFT_TO_QUERY:
 	print("[SEARCH QUERY GET]: " + searchUrl)
 
 	try:
-		searchResults = json.loads(urlopen(searchUrl)
+		pageResults = json.loads(urlopen(searchUrl)
 								   .read()
 								   .decode("utf-8"))
 	except HTTPError:
 		print("Search Query HTTPError: " + searchUrl)
 		exit(0)
 
+	# If no more results, stop querying additional pages.
+	if len(pageResults['items']) == 0:
+		PAGES_LEFT_TO_QUERY = False
+	else:
+		# If new incoming page results will put us over user defined search limit
+		# Trim the results down to the user defined limit and stop query
+		searchResults += pageResults['items']
+
+		if len(searchResults) > max_results_param:
+			searchResults = searchResults[0:max_results_param]
+			PAGES_LEFT_TO_QUERY = False
 
 	PAGE += 1
 
-	if len(searchResults['items']) == 0 or PAGE > MAX_PAGES_TO_QUERY:
+	if PAGE > MAX_PAGES_TO_QUERY:
 		PAGES_LEFT_TO_QUERY = False
-
 
 '''
 ### DEV BLOCK START
@@ -105,8 +116,13 @@ This uses a search_sample.json file results for testing/dev purpose
 ### DEV BLOCK END
 '''
 
+print(str(len(searchResults)) + " results retrieved.")
+
 # Filter out search results that does not contain our query in the body/title
-searchResults['items'], OMITTED_RESULTS = filterIssueWithQueryString(searchResults['items'], SEARCH_QUERY)
+MATCHED_RESULTS, OMITTED_RESULTS = filterIssueWithQueryString(searchResults, SEARCH_QUERY)
+
+print(str(len(MATCHED_RESULTS)) + " results title/body closely matched with query.")
+print(str(len(OMITTED_RESULTS)) + " results omitted due to lack of match with query.")
 
 OMITTED_ISSUES = []
 for result in OMITTED_RESULTS:
@@ -122,11 +138,11 @@ if PRINT_LOGS:
 	printJSON(OMITTED_ISSUES)
 
 # Slice top N issues. This helps prevent us from hitting GitHub's API call limit.
-searchResults['items'] = searchResults['items'][0:TOP_N_RESULTS]
+MATCHED_RESULTS = MATCHED_RESULTS[0:TOP_N_RESULTS]
 
 comments_urls = []
 
-for r in searchResults['items']:
+for r in MATCHED_RESULTS:
 	comments_urls.append({"issueID": r['id'], "comments_url": r['comments_url']})
 
 # Test URL:
@@ -184,3 +200,4 @@ if PRINT_LOGS:
 print("\n")
 writeResultToCSV(OMITTED_ISSUES, OUTPUT_FILE_PREFIX + '_OMITTED_ISSUES')
 writeResultToCSV(OMITTED_ISSUES, OUTPUT_FILE_PREFIX + '_CLASSIFIED_COMMENTS')
+print("\n")
