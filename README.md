@@ -19,3 +19,4 @@ Python script to mine for GitHub issues + comments and classify them.
 
 `/test` - Contains test file being ran by `pytest`
 
+`/result` - Folder to output result files to. Contains a `.gitignore` to ignore all files in this folder to prevent results from being committed
