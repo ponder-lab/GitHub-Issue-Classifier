@@ -32,4 +32,4 @@ def writeResultToCSV(result, filename):
     outfile = './results/' + filename + '_' + timestamp + '.csv'
     print('writeResultToCSV: ' + outfile)
     df = pd.DataFrame(result)
-    df.to_csv(outfile)
+    df.to_csv(outfile, index=False)

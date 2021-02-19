@@ -140,16 +140,34 @@ if PRINT_LOGS:
 # Slice top N issues. This helps prevent us from hitting GitHub's API call limit.
 MATCHED_RESULTS = MATCHED_RESULTS[0:TOP_N_RESULTS]
 
+# Test comment API URL:
+# https://api.github.com/repos/tensorflow/tensorflow/issues/27880/comments
+
+# Hold all comment lines, and tag each individual lines with the comment/issue related data
+# i.e URLs, IDs, links etc...
+CORPUS = []
+
+# Hold all comment url API endpoint
 comments_urls = []
 
 for r in MATCHED_RESULTS:
-	comments_urls.append({"issueID": r['id'], "comments_url": r['comments_url']})
+	comments_urls.append({
+		"issueID": r['id'],
+		"comments_url": r['comments_url'],
+		"issueURL_HTML": r['html_url']
+	})
 
-# Test URL:
-# https://api.github.com/repos/tensorflow/tensorflow/issues/27880/comments
-
-# Hold all comment lines/text corpus as an array of tuples (issueID, commentLine)
-CORPUS = []
+	# Also add each issue's body to the comment corpus array to be processed as well.
+	issue_body_lines = r['body'].splitlines()
+	for line in issue_body_lines:
+		if line != "":
+			CORPUS.append({
+				"issueID": r['id'],
+				"issueURL_API": r['url'],
+				"issueURL_HTML": r['html_url'],
+				"commentLine": processComment(line),
+				"commentURL": r['html_url'] # Same as issue html url
+			})
 
 print("\n")
 
@@ -178,10 +196,10 @@ for url in comments_urls:
 					CORPUS.append({
 						"issueID": url['issueID'],
 						"issueURL_API": comment['issue_url'],
+						"issueURL_HTML": url['issueURL_HTML'],
 						"commentLine": processComment(line),
 						"commentURL": comment['html_url']
 					})
-
 
 ### Load Model/Vector - Use the serialized model/count vector files included
 model = load("GitHub_comments_logisticRegression.model")
