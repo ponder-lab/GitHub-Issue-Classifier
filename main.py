@@ -20,6 +20,7 @@ from joblib import load
 from utils.commentProcessor import processComment
 from utils.filterResults import filterIssueWithQueryString
 from utils.io import printJSON, writeResultToCSV
+from utils.githubAPI import gitHubSearchQueryAPI, gitHubCommentAPI
 
 from interface import InitializeSearchInterface
 
@@ -36,16 +37,16 @@ However, we are also querying for all the comments for each of the results we ge
 We should look to limiting our search results so that we don't get a 403 response on our
 additional queries for comments.
 
-TODO: 	Will need to look into what the optimal results we should query so that we don't
-		error out on our subsequent comments_url queries. We are also filtering the top N
-		issues below.
+TODO: Implement authenticated API calls
+https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+
 '''
 
 # Query options/params:
 
 # Figure out how to deal with query limit before turning on this
 # option in the search interface.
-TOP_N_RESULTS = 3
+LIMIT_RESULTS = 5
 
 params = InitializeSearchInterface()
 
@@ -72,18 +73,10 @@ while PAGES_LEFT_TO_QUERY:
 
 	searchUrl = GITHUB_API_SEARCH_ISSUES_URL + "?" + encodedQueryString
 
-	# Sample URL
-	# https://api.github.com/search/issues?q=%22%40tf.function%22&per_page=3&sort=comments&order=desc
 
 	print("[SEARCH QUERY GET]: " + searchUrl)
 
-	try:
-		pageResults = json.loads(urlopen(searchUrl)
-								   .read()
-								   .decode("utf-8"))
-	except HTTPError:
-		print("Search Query HTTPError: " + searchUrl)
-		exit(0)
+	pageResults = gitHubSearchQueryAPI(searchUrl)
 
 	# If no more results, stop querying additional pages.
 	if len(pageResults['items']) == 0:
@@ -101,6 +94,7 @@ while PAGES_LEFT_TO_QUERY:
 
 	if PAGE > MAX_PAGES_TO_QUERY:
 		PAGES_LEFT_TO_QUERY = False
+
 
 '''
 ### DEV BLOCK START
@@ -137,8 +131,9 @@ if PRINT_LOGS:
 	print('\n OMITTED ISSUES \n')
 	printJSON(OMITTED_ISSUES)
 
-# Slice top N issues. This helps prevent us from hitting GitHub's API call limit.
-MATCHED_RESULTS = MATCHED_RESULTS[0:TOP_N_RESULTS]
+# This slices the total results to limit the number of calls we make for the comments
+# to prevent GitHub API from temporarily blocking us for making too many calls.
+MATCHED_RESULTS = MATCHED_RESULTS[0:LIMIT_RESULTS]
 
 # Test comment API URL:
 # https://api.github.com/repos/tensorflow/tensorflow/issues/27880/comments
@@ -147,17 +142,19 @@ MATCHED_RESULTS = MATCHED_RESULTS[0:TOP_N_RESULTS]
 # i.e URLs, IDs, links etc...
 CORPUS = []
 
-# Hold all comment url API endpoint
-comments_urls = []
+# Hold all issues with their comments API url to query
+issues_api_urls = []
 
 for r in MATCHED_RESULTS:
-	comments_urls.append({
+	# For each issue, append to issues_api_urls the comments_url API endpoint to query the comments
+	issues_api_urls.append({
 		"issueID": r['id'],
 		"comments_url": r['comments_url'],
 		"issueURL_HTML": r['html_url']
 	})
 
-	# Also add each issue's body to the comment corpus array to be processed as well.
+	# Also add each issue's body (description/first comment) to the
+	# comment corpus array to be processed as well.
 	issue_body_lines = r['body'].splitlines()
 	for line in issue_body_lines:
 		if line != "":
@@ -171,35 +168,9 @@ for r in MATCHED_RESULTS:
 
 print("\n")
 
-for url in comments_urls:
-
-	print("[COMMENTS URL GET]: " + url['comments_url'])
-
-	try:
-		comment_data = json.loads(urlopen(url['comments_url'])
-								  .read()
-								  .decode('utf-8'))
-
-	# We usually 403 error out here for API limit
-	# Try and fix the limit of issues/comments above.
-	except HTTPError:
-		print("Comments API HTTPError: " + url['comments_url'])
-		exit(0)
-
-	# For each non-bot comment, split up each sentence and append into CORPUS array above.
-	for comment in comment_data:
-		if (comment["user"]["type"] != "Bot"):
-			comment_lines = comment["body"].splitlines()
-
-			for line in comment_lines:
-				if line != "":
-					CORPUS.append({
-						"issueID": url['issueID'],
-						"issueURL_API": comment['issue_url'],
-						"issueURL_HTML": url['issueURL_HTML'],
-						"commentLine": processComment(line),
-						"commentURL": comment['html_url']
-					})
+# For each of the comment_url in the list to query, query for all the comments
+# and add them to the corpus.
+CORPUS += gitHubCommentAPI(issues_api_urls)
 
 ### Load Model/Vector - Use the serialized model/count vector files included
 model = load("GitHub_comments_logisticRegression.model")
