@@ -2,6 +2,11 @@ from pyfiglet import Figlet
 from PyInquirer import prompt
 from prompt_toolkit.validation import Validator, ValidationError
 from utils.io import clear
+from utils.githubAPI import loadAccessToken,\
+    writeAccessToken,\
+    getAccessToken,\
+    validateAccessToken,\
+    printGitHubRateLimitStatus
 import regex
 
 # Params validator
@@ -45,13 +50,6 @@ INTERFACE = [
         'message': "Max number of results (1-1000):",
         'validate': MaxResultValidator
     },
-    # TODO: Need to figure out how to deal with query limit.
-    # {
-    #     'type': 'input',
-    #     'name': 'top_n_results',
-    #     'message': "Filter top N results (3 by default/1000 max):",
-    #     'validate': MaxResultValidator
-    # },
     {
         'type': 'list',
         'name': 'sort_by',
@@ -74,6 +72,43 @@ CONFIRM_INTERFACE = [
     }
 ]
 
+# Adding personal access token interface
+ADD_TOKEN_INTERFACE = [
+    {
+        'type': 'confirm',
+        'name': 'add_token',
+        'message': "It looks like you don't have a personal access token set properly!"
+                   "\n(Either not set properly in config.json, or is an invalid token)"
+                   "\n\nIt is HIGHLY recommended that you add a personal access token"
+                   "\nto increase your GitHub API query limit (5000 for authenticated queries)."
+                   "\nFollow these instructions to create a GitHub Personal Access Token"
+                   "\nhttps://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
+                   "\n\nWould you like to add a token? (Y/n)",
+        'default': True
+    },
+    {
+        'type': 'input',
+        'name': 'access_token',
+        'message': "Enter your access token:",
+        'when': lambda answers: answers.get('add_token', True)
+    },
+]
+
+ADD_VALID_TOKEN_INTERFACE = [
+    {
+        'type': 'confirm',
+        'name': 'retry_add_token',
+        'message': "Token not valid, would you like to try again? (Y/n)",
+        'default': True
+    },
+    {
+        'type': 'input',
+        'name': 'access_token',
+        'message': "Enter your access token:",
+        'when': lambda answers: answers.get('retry_add_token', True)
+    },
+]
+
 # Print CLI header
 def printHeader():
     f = Figlet(font='big')
@@ -83,12 +118,60 @@ def printHeader():
 
 # Main Interface Function
 def InitializeSearchInterface():
+
+    # Check if personal access token is configured.
+
+    # Load access token into memory from file and set it to global ACCESS_TOKEN
+    loadAccessToken()
+
+    # Get global ACCESS_TOKEN variable from the GitHub API file.
+    ACCESS_TOKEN = getAccessToken()
+    is_token_valid = validateAccessToken(ACCESS_TOKEN)
+    # If we don't have access token, allow user to add it via CLI
+    if ACCESS_TOKEN == None or ACCESS_TOKEN == "" or is_token_valid == False:
+        clear()
+        printHeader()
+
+        params = prompt(ADD_TOKEN_INTERFACE)
+
+        # User wish to add a token, check for added token's validity.
+        if params['add_token'] == True:
+            access_token = params['access_token']
+            is_token_valid = validateAccessToken(access_token)
+
+            while is_token_valid == False:
+                params = prompt(ADD_VALID_TOKEN_INTERFACE)
+                retry_add_token = params['retry_add_token']
+
+                if retry_add_token == False:
+                    break
+
+                access_token = params['access_token']
+                is_token_valid = validateAccessToken(access_token)
+
+            # If the interface gets here either the user had added a valid token
+            # or chose to skip and not add instead.
+            # Either case, check for validity before writing token to file.
+            is_token_valid = validateAccessToken(access_token)
+
+            if is_token_valid:
+                writeAccessToken(access_token)
+            else:
+                writeAccessToken(None)
+
+        else:
+            # Else user did not wish to add a token. Write null back to config.json
+            writeAccessToken(None)
+
     params = {}
     params_finalized = False
 
     while not params_finalized:
         clear()
         printHeader()
+
+        loadAccessToken()
+        printGitHubRateLimitStatus()
 
         params = prompt(INTERFACE)
         clear()

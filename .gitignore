@@ -1,3 +1,7 @@
+# Omit access token json file
+config/access_token.json
+
+
 # IntelliJ
 *.iml
 .idea/
