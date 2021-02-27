@@ -1,19 +1,48 @@
 '''
 This file contains all the utility function to make HTTP calls to the API
 '''
+import requests
+import time
+import json
+from utils.commentProcessor import processComment
 from urllib.error import HTTPError
 
-import requests
+# GLOBAL access token. getter function below.
+ACCESS_TOKEN = None
+def validateAccessToken(token):
+    headers = {}
+    headers['Authorization'] = f"token {token}"
+    res = requests.get("https://api.github.com/rate_limit", headers=headers)
 
-from utils.commentProcessor import processComment
+    return res.status_code != 401
+
+def writeAccessToken(token):
+    with open('./config/access_token.json', 'w') as config_file:
+        data = {}
+        data['access_token'] = token or "<YOUR_GITHUB_PERSONAL_ACCESS_TOKEN>"
+        json.dump(data, config_file)
+
+def loadAccessToken():
+    with open('./config/access_token.json') as config_file:
+        data = json.load(config_file)
+        global ACCESS_TOKEN
+        ACCESS_TOKEN = data['access_token']
+
+def getAccessToken():
+    return ACCESS_TOKEN
+
 
 # Takes in the full URL for the search query
 # Sample: https://api.github.com/search/issues?q=%22%40tf.function%22&per_page=3&sort=comments&order=desc
 # Returns the results in JSON format
 def gitHubSearchQueryAPI(url):
     try:
-        pageResult = requests.get(url).json()
-        return pageResult
+        headers = {}
+        headers['Authorization'] = f"token {ACCESS_TOKEN}"
+        pageResult = requests.get(url, headers=headers)
+        pageResult.raise_for_status()
+
+        return pageResult.json()
 
     except HTTPError:
         print("Search Query HTTPError: " + url)
@@ -27,8 +56,11 @@ def gitHubCommentAPI(issues):
         print("[COMMENTS URL GET]: " + i['comments_url'])
 
         try:
-            comment_data = requests.get(i['comments_url']).json()
-
+            headers = {}
+            headers['Authorization'] = f"token {ACCESS_TOKEN}"
+            res = requests.get(i['comments_url'], headers=headers)
+            res.raise_for_status()
+            comment_data = res.json()
         # We usually 403 error out here for API limit
         # Try and fix the limit of issues/comments above.
         except HTTPError:
@@ -51,3 +83,18 @@ def gitHubCommentAPI(issues):
                         })
 
     return results
+
+def printGitHubRateLimitStatus():
+    headers = {}
+    if validateAccessToken(ACCESS_TOKEN):
+        headers['Authorization'] = f"token {ACCESS_TOKEN}"
+
+    res = requests.get("https://api.github.com/rate_limit", headers=headers).json()
+    total = res['rate']['limit']
+    remaining = res['rate']['remaining']
+    reset = res['rate']['reset']
+
+    print('\nGitHub API Query Limit')
+    print(f'Total: {total}')
+    print(f'Remaining: {remaining}')
+    print(f'Limit Resets On: {time.ctime(reset)}\n')

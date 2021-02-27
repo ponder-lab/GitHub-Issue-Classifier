@@ -22,7 +22,9 @@ def filterIssueWithQueryString(results, query):
     omittedResults = []
 
     for r in results:
-        if query in r['title'] or query in r['body']:
+        title = r['title'] or ""
+        body = r['body'] or ""
+        if query in  title or query in body:
             matchedResults.append(r)
         else:
             omittedResults.append(r)
