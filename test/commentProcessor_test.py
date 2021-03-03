@@ -20,6 +20,10 @@ TEST_CASES = [
     {
         "test": "Testing for a single line `code block here` should be tokenized",
         "expected_result": "testing single line CODE tokenized"
+    },
+    {
+        "test": "> This line is a quote, should expect a single QUOTE token",
+        "expected_result": "QUOTE"
     }
 ]
 

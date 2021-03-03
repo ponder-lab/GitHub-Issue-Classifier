@@ -23,10 +23,10 @@ Run the `main.py` script: `python3.9 main.py` to start up the interface.
 2) Simply run `pytest` to check that all tests are passing.
 
 ### Folder Structure
-`/src` - Contains the main driver file used for running the script/querying API and classification, along with the CLI interface
-
 `/utils` - Contains utility function files, such as IO, filtering results and processing comments
 
 `/test` - Contains test file being ran by `pytest`
 
 `/result` - Folder to output result files to. Contains a `.gitignore` to ignore all files in this folder to prevent results from being committed
+
+`/config` - Contains configuration files for the app to run, such as the personal access token.

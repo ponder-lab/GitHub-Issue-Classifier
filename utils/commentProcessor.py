@@ -53,6 +53,11 @@ def processComment(c):
     # Parse them into Token using spacy parser
     parsed_line = parser(c)
 
+    # If the line starts with ">" (markdown for quote), return QUOTE token for line
+    # as this line is a quoted line.
+    if(str(parsed_line[0]) == ">"):
+        return "QUOTE"
+
     # For each token/word in the line that, tokenize the remaining URL/SCREEN_NAME
     # And also filter out words that are in the stop_words list.
     for token in parsed_line:
