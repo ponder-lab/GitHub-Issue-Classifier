@@ -4,6 +4,7 @@ This file contains all the utility function to make HTTP calls to the API
 import requests
 import time
 import json
+import re
 from utils.commentProcessor import processComment
 from urllib.error import HTTPError
 
@@ -70,10 +71,14 @@ def gitHubCommentAPI(issues):
         # For each non-bot comment, split up each sentence and append into CORPUS array above.
         for comment in comment_data:
             if (comment["user"]["type"] != "Bot"):
-                comment_lines = comment["body"].splitlines()
 
+                # Tokenize CODE before splitting lines to prevent random code formatted lines
+                # to throw error and skew the results.
+                code_tokenized_comment = re.sub('```([^`]*)```|`([^`]*)`', 'CODE', comment["body"])
+
+                comment_lines = code_tokenized_comment.splitlines()
                 for line in comment_lines:
-                    if line != "":
+                    if line:
                         results.append({
                             "issueID": i['issueID'],
                             "issueURL_API": comment['issue_url'],

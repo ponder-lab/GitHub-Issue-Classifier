@@ -14,14 +14,6 @@ TEST_CASES = [
         "expected_result": "testing url string URL token"
     },
     {
-        "test": "Testing for a ```multi line code block``` should be tokenized",
-        "expected_result": "testing CODE tokenized"
-    },
-    {
-        "test": "Testing for a single line `code block here` should be tokenized",
-        "expected_result": "testing single line CODE tokenized"
-    },
-    {
         "test": "> This line is a quote, should expect a single QUOTE token",
         "expected_result": "QUOTE"
     }
