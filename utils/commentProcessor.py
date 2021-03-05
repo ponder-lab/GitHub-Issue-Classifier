@@ -20,7 +20,6 @@ import nltk
 # nltk.download('stopwords')
 
 import spacy
-import re
 from string import punctuation
 from nltk.stem import WordNetLemmatizer
 
@@ -43,9 +42,6 @@ def processComment(c):
     # Replace \n newline character and \t tabs
     c = c.replace('\n', '')
     c = c.replace('\t', '')
-
-    # Tokenize CODE
-    c = re.sub('```([^`]*)```|`([^`]*)`', 'CODE', c)
 
     # Array to store all processed string tokens
     processed_tokens = []
