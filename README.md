@@ -8,10 +8,15 @@ Python script to mine for GitHub issues + comments and classify them.
 ## Setup:
 1) Ensure Python `3.9.1` and corrosponding pip `3.9` are installed
 2) Install requirements: `pip3.9 install -r requirements.txt`
-   - Part of the script also relies on downloading stop word dictionaries.
-   - Download `nltk` stop words if the script throws and error by uncommenting
-     `nltk.download('wordnet')` and `nltk.download('stopwords'` in `commentProcessor.py`
-3) Add a GitHub Personal Access Token in the access token file: `access_token.json`. Replace `<YOUR_GITHUB_PERSONAL_ACCESS_TOKEN>` with your token.
+3) Download nltk stop word packages (only need to do it once per environment)
+   - Download `nltk` stop words packages `wordnet` and `stopwords` via the python terminal
+   ```aidl
+    > import nltk
+    > nltk.download('wordnet')
+    > nltk.download('stopwords')
+    ```
+    - If you run intl SSL error, make sure python ssl certificates are installed: `bash /Applications/Python\ 3.9/Install\ Certificates.command `
+4) Add a GitHub Personal Access Token in the access token file: `access_token.json`. Replace `<YOUR_GITHUB_PERSONAL_ACCESS_TOKEN>` with your token.
    
 Instructions on how to create a GitHub Personal Access Token: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
  
@@ -41,7 +46,7 @@ optional arguments:
 ### Usage:
 Run `python3.9 mine-issues.py <QUERY>` with the following optional parameters:
 
-`-i` or `--interface`: will cause the script to trigger the interactive CLI see in the screenshot above.
+`-i` or `--interface`: will cause the script to trigger the interactive CLI and ignore all other params. See screenshot above of the interface.
 
 `-v` or `--verbose`: will print out extra logging such as printing out the entire result object in neat JSON format.
 
