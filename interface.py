@@ -117,7 +117,7 @@ def printHeader():
     print('PONDER Lab - https://github.com/ponder-lab \n')
 
 # Main Interface Function
-def InitializeSearchInterface():
+def InitializeSearchInterface(default_query=''):
 
     # Check if personal access token is configured.
 
@@ -173,6 +173,7 @@ def InitializeSearchInterface():
         loadAccessToken()
         printGitHubRateLimitStatus()
 
+        INTERFACE[0]['default'] = default_query
         params = prompt(INTERFACE)
         clear()
         printHeader()
