@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser()
 
 # Interface option, if true we toggle the interface below.
 # If false, we just grab the params from argparser result.
-parser.add_argument('-i', '--interface', action='store_true',
+parser.add_argument('-i', '--interactive', action='store_true',
 					help="**toggle the interactive CLI**")
 
 parser.add_argument('query')
@@ -55,7 +55,7 @@ args = parser.parse_args()
 params = {}
 
 # If user entered the '-i' or '--interface' option, trigger the pyinquirer interactive interface.
-if args.interface:
+if args.interactive:
 	params = InitializeSearchInterface(args.query)
 else:
 	params['q'] = args.query
