@@ -33,7 +33,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -i, --interactive       **toggle the interactive CLI**
+  -i, --interactive     **toggle the interactive CLI**
   -v, --verbose         print additional logs
   -m MAX_RESULTS, --max-results MAX_RESULTS
                         (int) max results to query
@@ -46,7 +46,7 @@ optional arguments:
 ### Usage:
 Run `python3.9 mine-issues.py <QUERY>` with the following optional parameters:
 
-`-i` or `--interface`: will cause the script to trigger the interactive CLI and ignore all other params. See screenshot above of the interface.
+`-i` or `--interactive`: will cause the script to trigger the interactive CLI and ignore all other params. See screenshot above of the interface.
 
 `-v` or `--verbose`: will print out extra logging such as printing out the entire result object in neat JSON format.
 
