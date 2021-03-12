@@ -78,6 +78,8 @@ def gitHubCommentAPI(issues):
 
                 comment_lines = code_tokenized_comment.splitlines()
                 for line in comment_lines:
+                    line = line.strip('\n')
+                    line = line.strip('\t')
                     if line:
                         results.append({
                             "issueID": i['issueID'],
