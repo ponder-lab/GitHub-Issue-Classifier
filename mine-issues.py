@@ -1,4 +1,5 @@
 import argparse
+import re
 
 from math import ceil
 from urllib.parse import urlencode
@@ -199,9 +200,14 @@ for r in MATCHED_RESULTS:
 	# Also add each issue's body (description/first comment) to the
 	# comment corpus array to be processed as well.
 	issue_body = r['body'] or ""
+	# Also check for issue's description for any CODE blocks to be tokenized.
+	issue_body = re.sub('```([^`]*)```|`([^`]*)`', 'CODE', issue_body)
 	issue_body_lines = issue_body.splitlines()
 	for line in issue_body_lines:
-		if line != "":
+		# Strip away any new lines
+		line = line.strip('\n')
+		line = line.strip('\t')
+		if line:
 			CORPUS.append({
 				"issueID": r['id'],
 				"issueURL_API": r['url'],
