@@ -1,4 +1,4 @@
-# GitHub-Issue-Mining
+# GitHub-Issue-Classifier
 [![Build Status](https://www.travis-ci.com/ponder-lab/GitHub-Issue-Mining.svg?token=hsn7ZoyjgYPPHKxyfxk7&branch=main)](https://www.travis-ci.com/ponder-lab/GitHub-Issue-Mining)
 
 Python script to mine for GitHub issues + comments and classify them.
