@@ -18,7 +18,7 @@ Python script to mine for GitHub issues + comments and classify them.
     - If you run intl SSL error, make sure python ssl certificates are installed: `bash /Applications/Python\ 3.9/Install\ Certificates.command `
 4) Add a GitHub Personal Access Token in the access token file: `access_token.json`. Replace `<YOUR_GITHUB_PERSONAL_ACCESS_TOKEN>` with your token.
    
-Instructions on how to create a GitHub Personal Access Token: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+[Instructions on how to create a GitHub Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
  
 ## Run Instructions:
 
