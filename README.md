@@ -1,5 +1,5 @@
 # GitHub-Issue-Classifier
-[![Build Status](https://www.travis-ci.com/ponder-lab/GitHub-Issue-Mining.svg?token=hsn7ZoyjgYPPHKxyfxk7&branch=main)](https://www.travis-ci.com/ponder-lab/GitHub-Issue-Mining)
+[![Build Status](https://www.travis-ci.com/ponder-lab/GitHub-Issue-Mining.svg?token=hsn7ZoyjgYPPHKxyfxk7&branch=main)](https://www.travis-ci.com/ponder-lab/GitHub-Issue-Mining) [![DOI](https://zenodo.org/badge/336956045.svg)](https://zenodo.org/badge/latestdoi/336956045)
 
 Python script to mine for GitHub issues + comments and classify them using an [analysis and detection of information types of open source software issue discussions](https://doi.org/10.1109/ICSE.2019.00058). Our tool automates the process of querying GitHub for particular issues and feeding them into classification models. It supports both interactive and non-interactive modes.
 
