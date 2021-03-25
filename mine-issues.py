@@ -128,9 +128,9 @@ while PAGES_LEFT_TO_QUERY:
 This uses a search_sample.json file results for testing/dev purpose
 '''
 # Hard coded params for later use
-# SEARCH_QUERY = "tf.function"
+# SEARCH_QUERY = ""
 # PRINT_LOGS = True
-# OUTPUT_FILE_PREFIX = 'ponder'
+# OUTPUT_FILE_PREFIX = ''
 # with open("search_sample.json") as f:
 # 	searchResults = json.load(f)
 '''
