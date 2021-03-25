@@ -71,3 +71,6 @@ Running tests to ensure that the script is functioning properly. Travis CI build
 `/result` - Folder to output result files to. Contains a `.gitignore` to ignore all files in this folder to prevent results from being committed.
 
 `/config` - Contains configuration files for the app to run, such as the personal access token.
+
+## Citation
+Please cite our tool using the [bibliographic information on Zenodo](https://doi.org/10.5281/zenodo.4637637).
