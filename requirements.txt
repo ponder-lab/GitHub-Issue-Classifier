@@ -54,7 +54,7 @@ py==1.10.0
 pycparser==2.20
 pydantic==1.7.3
 pyfiglet==0.8.post1
-Pygments==2.7.3
+Pygments==2.7.4
 PyInquirer==1.0.3
 pyparsing==2.4.7
 pyrsistent==0.17.3
