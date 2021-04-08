@@ -58,6 +58,61 @@ INTERFACE = [
         'filter': lambda val: SORT_OPTIONS_MAP[val]
     },
     {
+        'type': 'checkbox',
+        'name': 'filter',
+        'message': "Categories to filter out:",
+        'choices': [
+            {
+                'name': 'Expected Behaviour'
+            },
+            {
+                'name': 'Motivation'
+            },
+            {
+                'name': 'Observed Bug Behaviour'
+            },
+            {
+                'name': 'Bug Reproduction'
+            },
+            {
+                'name': 'Investigation and Exploration'
+            },
+            {
+                'name': 'Solution Discussion'
+            },
+            {
+                'name': 'Contribution and Commitment'
+            },
+            {
+                'name': 'Task Progression'
+            },
+            {
+                'name': 'Testing'
+            },
+            {
+                'name': 'Future Plan'
+            },
+            {
+                'name': 'New Issues and Requests'
+            },
+            {
+                'name': 'Solution Usage'
+            },
+            {
+                'name': 'WorkArounds'
+            },
+            {
+                'name': 'Issue Content Management'
+            },
+            {
+                'name': 'Action on Issue'
+            },
+            {
+                'name': 'Social Conversation'
+            }
+        ]
+    },
+    {
         'type': 'confirm',
         'name': 'print_logs',
         'message': "Print logs to console/terminal? (y/N):",

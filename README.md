@@ -56,6 +56,12 @@ Run `python3.9 mine-issues.py <QUERY>` with the following optional parameters:
 
 `-p` or `--prefix-filename`: String to prefix to the resulting file name (`results_` by default).
 
+`-f` or `--filter`: String<Category> of one of the 16 categories to filter out from results. Can provide multiple args (i.e `-f foo -f bar` ...)
+
+Categories that can be filtered:
+
+`['Expected Behaviour', 'Motivation', 'Observed Bug Behaviour', 'Bug Reproduction', 'Investigation and Exploration', 'Solution Discussion', 'Contribution and Commitment', 'Task Progression', 'Testing', 'Future Plan', 'New Issues and Requests', 'Solution Usage', 'WorkArounds', 'Issue Content Management', 'Action on Issue', 'Social Conversation']`
+
 ## Testing
 Running tests to ensure that the script is functioning properly. Travis CI build also runs this as part of build status checks.
 1) Ensure that `pytest` is properly set up for your python `3.9` env.

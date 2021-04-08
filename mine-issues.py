@@ -46,6 +46,12 @@ parser.add_argument('-s', '--sort-by',
 parser.add_argument('-p', '--prefix-filename',
 					default="results_",
 					help='(string) file name prefix for result output files')
+
+parser.add_argument('-f', '--filter',
+					action='append',
+					nargs='*',
+					help='(string) category to filter from results')
+
 args = parser.parse_args()
 
 #
@@ -54,16 +60,22 @@ args = parser.parse_args()
 #
 
 params = {}
+FILTERED_CATEGORIES = []
 
 # If user entered the '-i' or '--interface' option, trigger the pyinquirer interactive interface.
 if args.interactive:
 	params = InitializeSearchInterface(args.query)
+	FILTERED_CATEGORIES = params['filter']
 else:
 	params['q'] = args.query
 	params['max_results'] = args.max_results
 	params['sort_by'] = args.sort_by
 	params['print_logs'] = args.verbose
 	params['out_file_prefix'] = args.prefix_filename
+
+	if args.filter:
+		for f in args.filter:
+			FILTERED_CATEGORIES.append(" ".join(f))
 
 PAGE = 1
 
@@ -235,6 +247,9 @@ vectorizer = load("models/GitHub_comments_logisticRegression.countVector")
 for c in CORPUS:
 	test_vector = vectorizer.transform([c['commentLine']])
 	c['category'] = model.predict(test_vector)[0]
+
+# Filter out any results that has category that is in the list of categories to be omitted from results.
+CORPUS = [c for c in CORPUS if c['category'] not in FILTERED_CATEGORIES]
 
 # Print the resulting corpus with the category predicted for each comment.
 if PRINT_LOGS:
