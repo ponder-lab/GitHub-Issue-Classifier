@@ -26,7 +26,7 @@ There are two ways to run this program, either through the interactive command l
 
 Below is the `-h` help/man page:
 ```aidl
-Usage: mine-issues.py [-h] [-i] [-v] [-m MAX_RESULTS] [-s SORT_BY] [-p PREFIX_FILENAME] query
+Usage: python mine-issues.py [-h] [-i] [-v] [-m MAX_RESULTS] [-s SORT_BY] [-p PREFIX_FILENAME] query
 
 positional arguments:
   query
