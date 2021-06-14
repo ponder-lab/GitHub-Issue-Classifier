@@ -10,10 +10,10 @@ Python script to mine for GitHub issues + comments and classify them using [anal
 2) Install requirements: `pip3.9 install -r requirements.txt`
 3) Download nltk stop word packages (only need to do it once per environment)
    - Download `nltk` stop words packages `wordnet` and `stopwords` via the python terminal
-   ```aidl
-    > import nltk
-    > nltk.download('wordnet')
-    > nltk.download('stopwords')
+   ```python
+    import nltk
+    nltk.download('wordnet')
+    nltk.download('stopwords')
     ```
     - If you run intl SSL error, make sure python ssl certificates are installed: `bash /Applications/Python\ 3.9/Install\ Certificates.command `
 4) Add a GitHub Personal Access Token in the access token file: `access_token.json`. Replace `<YOUR_GITHUB_PERSONAL_ACCESS_TOKEN>` with your token.
@@ -25,7 +25,7 @@ Python script to mine for GitHub issues + comments and classify them using [anal
 There are two ways to run this program, either through the interactive command line, or by directly passing in command line argument via `argparser`:
 
 Below is the `-h` help/man page:
-```aidl
+```bash
 Usage: python mine-issues.py [-h] [-i] [-v] [-m MAX_RESULTS] [-s SORT_BY] [-p PREFIX_FILENAME] query
 
 positional arguments:
