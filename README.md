@@ -25,7 +25,7 @@ Python script to mine for GitHub issues + comments and classify them using [anal
 There are two ways to run this program, either through the interactive command line, or by directly passing in command line argument via `argparser`:
 
 Below is the `-h` help/man page:
-```bash
+```
 Usage: python mine-issues.py [-h] [-i] [-v] [-m MAX_RESULTS] [-s SORT_BY] [-p PREFIX_FILENAME] query
 
 positional arguments:
