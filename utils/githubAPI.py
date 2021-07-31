@@ -70,7 +70,7 @@ def gitHubCommentAPI(issues):
 
         # For each non-bot comment, split up each sentence and append into CORPUS array above.
         for comment in comment_data:
-            if (comment["user"]["type"] != "Bot"):
+            if (comment["user"]["type"] != "Bot" and comment["user"]["login"] != "dependabot[bot]"):
 
                 # Tokenize CODE before splitting lines to prevent random code formatted lines
                 # to throw error and skew the results.
