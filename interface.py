@@ -115,7 +115,7 @@ INTERFACE = [
     {
         'type': 'confirm',
         'name': 'print_logs',
-        'message': "Print logs to console/terminal? (y/N):",
+        'message': "Print logs to console/terminal?:",
     }
 ]
 
@@ -123,7 +123,7 @@ CONFIRM_INTERFACE = [
     {
         'type': 'confirm',
         'name': 'is_finalized',
-        'message': "Confirm above query (y/N):",
+        'message': "Confirm above query:",
     }
 ]
 
@@ -138,7 +138,7 @@ ADD_TOKEN_INTERFACE = [
                    "\nto increase your GitHub API query limit (5000 for authenticated queries)."
                    "\nFollow these instructions to create a GitHub Personal Access Token"
                    "\nhttps://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
-                   "\n\nWould you like to add a token? (Y/n)",
+                   "\n\nWould you like to add a token?",
         'default': True
     },
     {
@@ -153,7 +153,7 @@ ADD_VALID_TOKEN_INTERFACE = [
     {
         'type': 'confirm',
         'name': 'retry_add_token',
-        'message': "Token not valid, would you like to try again? (Y/n)",
+        'message': "Token not valid, would you like to try again?",
         'default': True
     },
     {

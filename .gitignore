@@ -1,5 +1,5 @@
 # Omit access token json file
-config/access_token.json
+./config/access_token.json
 
 
 # IntelliJ
